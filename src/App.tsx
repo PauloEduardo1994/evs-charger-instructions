@@ -3,6 +3,7 @@ import Lottie from 'react-lottie'
 import { useTheme } from '@siakit/core'
 import { Heading } from '@siakit/heading'
 import { Flex } from '@siakit/layout'
+import { Text } from '@siakit/text'
 import { Tooltip } from '@siakit/tooltip'
 
 import Car from './lottie/Comp 1 (1).json'
@@ -56,8 +57,12 @@ export function App() {
         </Flex>
 
         <Flex overflow flex align="center" justify="center">
-          <Calculator />
-          <Calculator />
+          <Flex width={780}>
+            <Calculator />
+          </Flex>
+          <Flex align="center" justify="center">
+            <Text>{'Under Development :)'}</Text>
+          </Flex>
         </Flex>
       </Flex>
     </Flex>
