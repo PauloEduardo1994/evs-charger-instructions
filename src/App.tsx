@@ -7,7 +7,9 @@ import { Text } from '@siakit/text'
 import { Tooltip } from '@siakit/tooltip'
 
 import Car from './lottie/Comp 1 (1).json'
+// import ChangeTheme from './lottie/theme.json'
 import { Calculator } from './pages/Calculator/Calculator'
+import { Container } from './styles'
 
 export function App() {
   const { togggleTheme, changeColor, theme } = useTheme()
@@ -60,11 +62,11 @@ export function App() {
           <Flex width={780}>
             <Calculator />
           </Flex>
-          <Flex align="center" justify="center">
-            <Text>{'Under Development :)'}</Text>
-          </Flex>
         </Flex>
       </Flex>
+      <Container padding margin>
+        <Text>{'Under Development :)'}</Text>
+      </Container>
     </Flex>
   )
 }

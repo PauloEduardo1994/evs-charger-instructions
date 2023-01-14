@@ -26,25 +26,37 @@ export function Calculator() {
   const [hourCharger, setHourCharger] = useState('00')
   const [minutesCharger, setMinutesCharger] = useState('00')
   const [priceForKm, setPriceForKm] = useState(0)
-  const [modalVisible, setModalVisible] = useState(false)
+  const [powerChargerCv, setPowerChargerCv] = useState(0)
+  const [clientPowerCharger, setClientPowerCharger] = useState(false)
 
   async function handleSubmit(result: any): Promise<any> {
     try {
       formRef.current?.setErrors({})
 
-      const schema = Yup.object().shape({
-        selectCharger: Yup.string().required('Campo obrigatório').nullable(),
-        chargerPower: Yup.string().when('Campo obrigatório', {
-          is: !modalVisible,
-          then: () => Yup.string().required('Campo obrigatório').nullable(),
-        }),
-        batterySize: Yup.string().required('Campo obrigatório'),
-        energyCost: Yup.string().required('Campo obrigatório'),
-      })
+      if (clientPowerCharger === true) {
+        const schema = Yup.object().shape({
+          selectCharger: Yup.string().required('Campo obrigatório').nullable(),
+          chargerPower: Yup.string().required('Campo obrigatório').nullable(),
+          batterySize: Yup.string().required('Campo obrigatório'),
+          energyCost: Yup.string().required('Campo obrigatório'),
+          carAutonomy: Yup.string().required('Campo obrigatório'),
+        })
 
-      await schema.validate(result, {
-        abortEarly: false,
-      })
+        await schema.validate(result, {
+          abortEarly: false,
+        })
+      } else {
+        const schema = Yup.object().shape({
+          selectCharger: Yup.string().required('Campo obrigatório').nullable(),
+          batterySize: Yup.string().required('Campo obrigatório'),
+          energyCost: Yup.string().required('Campo obrigatório'),
+          carAutonomy: Yup.string().required('Campo obrigatório'),
+        })
+
+        await schema.validate(result, {
+          abortEarly: false,
+        })
+      }
 
       const total =
         result.batterySize *
@@ -65,7 +77,7 @@ export function Calculator() {
         resultSelectCharger = 7
       } else if (resultSelectCharger === 'client') {
         resultSelectCharger = clientCharger
-        setModalVisible(true)
+        setClientPowerCharger(true)
       }
 
       const resultTimeForCharger =
@@ -80,6 +92,11 @@ export function Calculator() {
         '0',
       )
 
+      const powerCar =
+        result.batterySize *
+        parseFloat('1,36'.replace('.', '').replace(',', '.'))
+
+      setPowerChargerCv(powerCar)
       setPriceCharger(resultPriceOfCharger)
       setHourCharger(hour)
       setMinutesCharger(minutes)
@@ -101,6 +118,9 @@ export function Calculator() {
     setMinutesCharger('00')
     setPriceForKm(0)
     formRef?.current?.reset()
+    setClientPowerCharger(false)
+    formRef?.current?.setFieldValue('chargerPower', '')
+    setPowerChargerCv(0)
   }
 
   return (
@@ -115,9 +135,13 @@ export function Calculator() {
                 placeholder="Ex: Wallbox 7kWh"
                 onChange={(value: any) => {
                   if (value.value === 'client') {
-                    setModalVisible(true)
+                    setClientPowerCharger(true)
                   } else {
-                    setModalVisible(false)
+                    setClientPowerCharger(false)
+                    formRef?.current?.setFieldValue('chargerPower', '')
+                  }
+                  if (value.value === null) {
+                    setClientPowerCharger(false)
                     formRef?.current?.setFieldValue('chargerPower', '')
                   }
                 }}
@@ -144,7 +168,7 @@ export function Calculator() {
                 label="Potência do carregador *"
                 name="chargerPower"
                 placeholder="Ex: 7 kWh"
-                disabled={!modalVisible}
+                disabled={!clientPowerCharger}
               />
               <MoneyInput label="Preço médio da energia *" name="energyCost" />
               <NumberInput
@@ -206,10 +230,15 @@ export function Calculator() {
                 })}
               </Text>
             </Flex>
+            <Separator />
+            <Flex align="center" justify="between">
+              <Text>Potência equivalente a:</Text>
+              <Text>{powerChargerCv} Cavalos-vapor</Text>
+            </Flex>
             <Flex>
               <Lottie
-                height={280}
-                width={280}
+                height={268}
+                width={268}
                 isPaused={false}
                 isStopped={false}
                 isClickToPauseDisabled
