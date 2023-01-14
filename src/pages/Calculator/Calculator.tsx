@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react'
 import Lottie from 'react-lottie'
 
+import Confetti from 'canvas-confetti'
 import * as Yup from 'yup'
 
 import { Button } from '@siakit/button'
@@ -95,6 +96,32 @@ export function Calculator() {
       const powerCar =
         result.batterySize *
         parseFloat('1,36'.replace('.', '').replace(',', '.'))
+
+      const end = Date.now() + 1 * 500
+
+      // go Buckeyes!
+      const colors = ['#B444F2', '#44F545']
+
+      ;(function Frame() {
+        Confetti({
+          particleCount: 2,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors,
+        })
+        Confetti({
+          particleCount: 2,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors,
+        })
+
+        if (Date.now() < end) {
+          requestAnimationFrame(Frame)
+        }
+      })()
 
       setPowerChargerCv(powerCar)
       setPriceCharger(resultPriceOfCharger)

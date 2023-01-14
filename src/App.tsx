@@ -64,7 +64,7 @@ export function App() {
           </Flex>
         </Flex>
       </Flex>
-      <Container padding margin>
+      <Container direction="column" padding margin>
         <Text>{'Under Development :)'}</Text>
       </Container>
     </Flex>
