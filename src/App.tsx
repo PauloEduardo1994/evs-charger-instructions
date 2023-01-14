@@ -55,7 +55,8 @@ export function App() {
           </Flex>
         </Flex>
 
-        <Flex overflow flex direction="column" align="center" justify="center">
+        <Flex overflow flex align="center" justify="center">
+          <Calculator />
           <Calculator />
         </Flex>
       </Flex>
