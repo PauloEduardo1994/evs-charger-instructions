@@ -15,6 +15,8 @@ import {
   FormHandles,
 } from '@siakit/form-unform'
 import { Flex } from '@siakit/layout'
+import { LinkButton } from '@siakit/link-button'
+import { Modal, ModalContent } from '@siakit/modal'
 import { Separator } from '@siakit/separator'
 import { Text } from '@siakit/text'
 
@@ -29,6 +31,7 @@ export function Calculator() {
   const [priceForKm, setPriceForKm] = useState(0)
   const [powerChargerCv, setPowerChargerCv] = useState(0)
   const [clientPowerCharger, setClientPowerCharger] = useState(false)
+  const [modalVisible, setModalVisible] = useState(false)
 
   async function handleSubmit(result: any): Promise<any> {
     try {
@@ -93,9 +96,10 @@ export function Calculator() {
         '0',
       )
 
-      const powerCar =
+      const powerCar = Math.floor(
         result.batterySize *
-        parseFloat('1,36'.replace('.', '').replace(',', '.'))
+          parseFloat('1,36'.replace('.', '').replace(',', '.')),
+      )
 
       const end = Date.now() + 1 * 500
 
@@ -151,137 +155,166 @@ export function Calculator() {
   }
 
   return (
-    <Flex flex overflow direction="column" flexWrap="wrap">
-      <Form flex overflow ref={formRef} onSubmit={handleSubmit}>
-        <Flex flex overflow align="center">
-          <Card flex overflow direction="column" flexWrap="wrap" gap>
-            <Flex gap direction="column" padding>
-              <Select
-                name="selectCharger"
-                label="Selecione o carregador *"
-                placeholder="Ex: Wallbox 7kWh"
-                onChange={(value: any) => {
-                  if (value.value === 'client') {
-                    setClientPowerCharger(true)
-                  } else {
-                    setClientPowerCharger(false)
-                    formRef?.current?.setFieldValue('chargerPower', '')
-                  }
-                  if (value.value === null) {
-                    setClientPowerCharger(false)
-                    formRef?.current?.setFieldValue('chargerPower', '')
-                  }
-                }}
-                options={[
-                  {
-                    label: 'Wallbox 7 kWh',
-                    value: '7kwh',
-                  },
-                  {
-                    label: 'Wallbox 11 kWh',
-                    value: '11kwh',
-                  },
-                  {
-                    label: 'Carregador portatil 32A 7 kWh',
-                    value: 'portable7',
-                  },
-                  {
-                    label: 'Carregador do cliente',
-                    value: 'client',
-                  },
-                ]}
-              />
-              <NumberInput
-                label="Potência do carregador *"
-                name="chargerPower"
-                placeholder="Ex: 7 kWh"
-                disabled={!clientPowerCharger}
-              />
-              <MoneyInput label="Preço médio da energia *" name="energyCost" />
-              <NumberInput
-                label="Tamanho da bateria do carro *"
-                name="batterySize"
-                placeholder="Ex: 70 kW (Quilowatt)"
-              />
-              <NumberInput
-                label="Autonomia do carro"
-                name="carAutonomy"
-                placeholder="Ex: 500 km"
-              />
-            </Flex>
-            <Footer>
-              <Button
-                variant="ghost"
-                colorScheme="red"
-                type="button"
-                onClick={handleResetReseult}
-              >
-                Limpar
-              </Button>
-              <Button type="submit">Calcular</Button>
-            </Footer>
-          </Card>
-          <Flex
-            flex
-            flexWrap="wrap"
-            direction="column"
-            gap={8}
-            padding
-            width={420}
-          >
-            <Flex justify="between">
-              <Text>Preço médio para carga completa:</Text>
-              <Text>
-                {priceCharger.toLocaleString('PT-BR', {
-                  minimumFractionDigits: 2,
-                  style: 'currency',
-                  currency: 'BRL',
-                })}
-              </Text>
-            </Flex>
-            <Separator />
-            <Flex align="center" justify="between">
-              <Text>Tempo médio para carga completa:</Text>
-              <Text>
-                {hourCharger}:{minutesCharger} Horas
-              </Text>
-            </Flex>
-            <Separator />
-            <Flex align="center" justify="between">
-              <Text>Valor pago por km rodado:</Text>
-              <Text>
-                {priceForKm.toLocaleString('PT-BR', {
-                  minimumFractionDigits: 2,
-                  style: 'currency',
-                  currency: 'BRL',
-                })}
-              </Text>
-            </Flex>
-            <Separator />
-            <Flex align="center" justify="between">
-              <Text>Potência equivalente a:</Text>
-              <Text>{powerChargerCv} Cavalos-vapor</Text>
-            </Flex>
-            <Flex>
-              <Lottie
-                height={268}
-                width={268}
-                isPaused={false}
-                isStopped={false}
-                isClickToPauseDisabled
-                options={{
-                  autoplay: true,
-                  loop: true,
-                  animationData: Charger,
-                  rendererSettings: {
-                    preserveAspectRatio: 'xMidYMid slice',
-                  },
-                }}
-              />
+    <>
+      <Modal open={modalVisible} onOpenChange={() => setModalVisible(false)}>
+        <ModalContent
+          title="Como converter a potência do carro elétrico"
+          size="md"
+        >
+          <Flex padding>
+            <Text>
+              {/* O motor ou os motores elétricos dos carros zero combustão
+              geralmente têm sua potência informada em kW (quilowatt). Cada kW
+              equivale a 1,36 cv (cavalos-vapor), a medida mais comum usada no
+              mercado brasileiro. O recém-lançado Renault Kwid E-Tech, por
+              exemplo, gera 48 kW, o que significaria 65 cv de potência. */}
+            </Text>
+          </Flex>
+        </ModalContent>
+      </Modal>
+      <Flex flex overflow direction="column" flexWrap="wrap">
+        <Form flex overflow ref={formRef} onSubmit={handleSubmit}>
+          <Flex flex overflow align="center">
+            <Card flex overflow direction="column" flexWrap="wrap" gap>
+              <Flex gap direction="column" padding>
+                <Select
+                  name="selectCharger"
+                  label="Selecione o carregador *"
+                  placeholder="Ex: Wallbox 7kWh"
+                  onChange={(value: any) => {
+                    if (value.value === 'client') {
+                      setClientPowerCharger(true)
+                    } else {
+                      setClientPowerCharger(false)
+                      formRef?.current?.setFieldValue('chargerPower', '')
+                    }
+                    if (value.value === null) {
+                      setClientPowerCharger(false)
+                      formRef?.current?.setFieldValue('chargerPower', '')
+                    }
+                  }}
+                  options={[
+                    {
+                      label: 'Wallbox 7 kWh',
+                      value: '7kwh',
+                    },
+                    {
+                      label: 'Wallbox 11 kWh',
+                      value: '11kwh',
+                    },
+                    {
+                      label: 'Carregador portatil 32A 7 kWh',
+                      value: 'portable7',
+                    },
+                    {
+                      label: 'Carregador do cliente',
+                      value: 'client',
+                    },
+                  ]}
+                />
+                <NumberInput
+                  label="Potência do carregador *"
+                  name="chargerPower"
+                  placeholder="Ex: 7 kWh"
+                  disabled={!clientPowerCharger}
+                />
+                <MoneyInput
+                  label="Preço médio da energia *"
+                  name="energyCost"
+                />
+                <NumberInput
+                  label="Tamanho da bateria do carro *"
+                  name="batterySize"
+                  placeholder="Ex: 70 kW (Quilowatt)"
+                />
+                <NumberInput
+                  label="Autonomia do carro"
+                  name="carAutonomy"
+                  placeholder="Ex: 500 km"
+                />
+              </Flex>
+              <Footer>
+                <Button
+                  variant="ghost"
+                  colorScheme="red"
+                  type="button"
+                  onClick={handleResetReseult}
+                >
+                  Limpar
+                </Button>
+                <Button type="submit">Calcular</Button>
+              </Footer>
+            </Card>
+            <Flex
+              flex
+              flexWrap="wrap"
+              direction="column"
+              gap={8}
+              padding
+              width={420}
+            >
+              <Flex justify="between">
+                <Text>Preço médio para carga completa:</Text>
+                <Text>
+                  {priceCharger.toLocaleString('PT-BR', {
+                    minimumFractionDigits: 2,
+                    style: 'currency',
+                    currency: 'BRL',
+                  })}
+                </Text>
+              </Flex>
+              <Separator />
+              <Flex align="center" justify="between">
+                <Text>Tempo médio para carga completa:</Text>
+                <Text>
+                  {hourCharger}:{minutesCharger} Horas
+                </Text>
+              </Flex>
+              <Separator />
+              <Flex align="center" justify="between">
+                <Text>Valor pago por km rodado:</Text>
+                <Text>
+                  {priceForKm.toLocaleString('PT-BR', {
+                    minimumFractionDigits: 2,
+                    style: 'currency',
+                    currency: 'BRL',
+                  })}
+                </Text>
+              </Flex>
+              <Separator />
+              <Flex align="center" justify="between">
+                <Text>Potência do motor equivalente a:</Text>
+                <Flex align="center" gap={8}>
+                  <Text>{powerChargerCv}</Text>
+                  <LinkButton
+                    type="button"
+                    onClick={() => setModalVisible(true)}
+                  >
+                    Cavalos-vapor
+                  </LinkButton>
+                </Flex>
+              </Flex>
+              <Flex>
+                <Lottie
+                  height={268}
+                  width={268}
+                  isPaused={false}
+                  isStopped={false}
+                  isClickToPauseDisabled
+                  options={{
+                    autoplay: true,
+                    loop: true,
+                    animationData: Charger,
+                    rendererSettings: {
+                      preserveAspectRatio: 'xMidYMid slice',
+                    },
+                  }}
+                />
+              </Flex>
             </Flex>
           </Flex>
-        </Flex>
-      </Form>
-    </Flex>
+        </Form>
+      </Flex>
+    </>
   )
 }
