@@ -143,7 +143,7 @@ export function Calculator() {
     }
   }
 
-  function handleResetReseult(): any {
+  function handleResetReseult() {
     setPriceCharger(0)
     setHourCharger('00')
     setMinutesCharger('00')
