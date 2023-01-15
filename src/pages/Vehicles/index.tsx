@@ -107,7 +107,7 @@ export function Vehicles() {
                 if (value?.value) {
                   setNumberId(Number(value?.value) - 1)
                   setShowSelect(true)
-                } else if (value?.value === undefined || null) {
+                } else if (!value?.value) {
                   handleResetReseult()
                 }
                 console.log(numberId)
