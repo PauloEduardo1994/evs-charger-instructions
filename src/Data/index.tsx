@@ -251,18 +251,8 @@ export const initialData = {
         name: 'Outras',
         vehicles: [
           {
-            id: 48,
-            name: 'Carro Elétrico',
-            mediaId: null,
-          },
-          {
             id: 47,
             name: 'Moto Elétrica',
-            mediaId: null,
-          },
-          {
-            id: 45,
-            name: 'Outros',
             mediaId: null,
           },
           {
