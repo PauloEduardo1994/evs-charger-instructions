@@ -214,6 +214,11 @@ export function Vehicles() {
               <Heading size="xxs">{vehicleData.maximumSpeed}</Heading>
             </Flex>
             <Separator />
+            <Flex justify="between" align="center">
+              <Text>Torque:</Text>
+              <Heading size="xxs">{vehicleData.torque}</Heading>
+            </Flex>
+            <Separator />
             <LinkButton
               type="button"
               onClick={() => window.open(vehicleData.font)}
