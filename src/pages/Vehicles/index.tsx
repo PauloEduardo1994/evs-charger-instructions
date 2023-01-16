@@ -4,8 +4,11 @@ import * as Yup from 'yup'
 
 import { Card } from '@siakit/card'
 import { Form, FormHandles, Select } from '@siakit/form-unform'
+import { Heading } from '@siakit/heading'
 import { Flex } from '@siakit/layout'
+import { LinkButton } from '@siakit/link-button'
 import { useLoading } from '@siakit/loading'
+import { Separator } from '@siakit/separator'
 import { Text } from '@siakit/text'
 
 import { initialData } from '../../Data'
@@ -19,6 +22,7 @@ export function Vehicles() {
   const [selectVehicles, setSelectVehicles] = useState<any>({})
   const [vehicleData, setVehicleData] = useState<any>({})
   const [showSelect, setShowSelect] = useState(false)
+  const [showDataCar, setShowDataCar] = useState(false)
   const { setLoading } = useLoading()
 
   async function handleSubmit(result: any): Promise<any> {
@@ -93,6 +97,7 @@ export function Vehicles() {
         ].vehicles.find((id) => id.id === carId)
 
         setVehicleData(response)
+        setShowDataCar(true)
       }
 
       setLoading(false)
@@ -106,6 +111,7 @@ export function Vehicles() {
     formRef?.current?.setFieldValue('selectVehiclesBrand', [])
     setShowSelect(false)
     setVehicleData([])
+    setShowDataCar(false)
   }
 
   return (
@@ -150,16 +156,72 @@ export function Vehicles() {
           </Flex>
         </Flex>
       </Form>
-      <Card
-        align="center"
-        justify="center"
-        height={80}
-        margin
-        direction="column"
-      >
-        <Text>Image Here</Text>
-      </Card>
-      <Flex>{vehicleData.id}</Flex>
+      {showDataCar && (
+        <>
+          <Card
+            align="center"
+            justify="center"
+            height={80}
+            margin
+            direction="column"
+          >
+            <Text>Image Here</Text>
+          </Card>
+          <Flex direction="column" margin>
+            <Flex justify="between" align="center">
+              <Text>Carro:</Text>
+              <Heading size="xxs">{vehicleData.name}</Heading>
+            </Flex>
+            <Separator />
+            <Flex justify="between" align="center">
+              <Text>Preço aproximado:</Text>
+              <Heading size="xxs">{vehicleData.price}</Heading>
+            </Flex>
+            <Separator />
+            <Flex justify="between" align="center">
+              <Text>Autonomia aproximada:</Text>
+              <Heading size="xxs">{vehicleData.autonomy}</Heading>
+            </Flex>
+            <Separator />
+            <Flex justify="between" align="center">
+              <Text>Cavalo-vapor:</Text>
+              <Heading size="xxs">{vehicleData.powerHorse}</Heading>
+            </Flex>
+            <Separator />
+            <Flex justify="between" align="center">
+              <Text>Aceleração 0/100h:</Text>
+              <Heading size="xxs">{vehicleData.acceleration}</Heading>
+            </Flex>
+            <Separator />
+            <Flex justify="between" align="center">
+              <Text>Tração:</Text>
+              <Heading size="xxs">{vehicleData.traction}</Heading>
+            </Flex>
+            <Separator />
+            <Flex justify="between" align="center">
+              <Text>Abastecimento:</Text>
+              <Heading size="xxs">{vehicleData.fuel}</Heading>
+            </Flex>
+            <Separator />
+            <Flex justify="between" align="center">
+              <Text>Capacidade máxima da bateria:</Text>
+              <Heading size="xxs">{vehicleData.batterySize}</Heading>
+            </Flex>
+            <Separator />
+            <Flex justify="between" align="center">
+              <Text>Velocidade máxima:</Text>
+              <Heading size="xxs">{vehicleData.maximumSpeed}</Heading>
+            </Flex>
+            <Separator />
+            <LinkButton
+              type="button"
+              onClick={() => window.open(vehicleData.font)}
+            >
+              Fonte
+            </LinkButton>
+          </Flex>
+        </>
+      )}
     </Flex>
   )
 }
