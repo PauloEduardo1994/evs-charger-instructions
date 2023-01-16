@@ -14,6 +14,7 @@ import {
   MoneyInput,
   FormHandles,
 } from '@siakit/form-unform'
+import { Heading } from '@siakit/heading'
 import { Flex } from '@siakit/layout'
 import { LinkButton } from '@siakit/link-button'
 import { Modal, ModalContent } from '@siakit/modal'
@@ -29,7 +30,7 @@ export function Calculator() {
   const [hourCharger, setHourCharger] = useState('00')
   const [minutesCharger, setMinutesCharger] = useState('00')
   const [priceForKm, setPriceForKm] = useState(0)
-  const [powerChargerCv, setPowerChargerCv] = useState(0)
+  const [specifications, setSpecifications] = useState('')
   const [clientPowerCharger, setClientPowerCharger] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -41,6 +42,7 @@ export function Calculator() {
         const schema = Yup.object().shape({
           selectCharger: Yup.string().required('Campo obrigatório').nullable(),
           chargerPower: Yup.string().required('Campo obrigatório').nullable(),
+          amperCharger: Yup.string().required('Campo obrigatório'),
           batterySize: Yup.string().required('Campo obrigatório'),
           energyCost: Yup.string().required('Campo obrigatório'),
           carAutonomy: Yup.string().required('Campo obrigatório'),
@@ -75,10 +77,13 @@ export function Calculator() {
 
       if (resultSelectCharger === '7kwh') {
         resultSelectCharger = 7
+        setSpecifications('6')
       } else if (resultSelectCharger === '11kwh') {
         resultSelectCharger = 11
+        setSpecifications('6')
       } else if (resultSelectCharger === 'portable7') {
         resultSelectCharger = 7
+        setSpecifications('6')
       } else if (resultSelectCharger === 'client') {
         resultSelectCharger = clientCharger
         setClientPowerCharger(true)
@@ -94,11 +99,6 @@ export function Calculator() {
       const minutes = String(Math.floor(resultTimeForCharger % 60)).padStart(
         2,
         '0',
-      )
-
-      const powerCar = Math.floor(
-        result.batterySize *
-          parseFloat('1,36'.replace('.', '').replace(',', '.')),
       )
 
       const end = Date.now() + 1 * 500
@@ -127,7 +127,30 @@ export function Calculator() {
         }
       })()
 
-      setPowerChargerCv(powerCar)
+      if (result.amperCharger <= 0) {
+        setSpecifications('')
+      } else if (result.amperCharger <= 15) {
+        setSpecifications('1,5')
+      } else if (result.amperCharger > 15 && result.amperCharger <= 21) {
+        setSpecifications('2,5')
+      } else if (result.amperCharger > 21 && result.amperCharger <= 28) {
+        setSpecifications('4')
+      } else if (result.amperCharger > 28 && result.amperCharger <= 36) {
+        setSpecifications('6')
+      } else if (result.amperCharger > 36 && result.amperCharger <= 50) {
+        setSpecifications('10')
+      } else if (result.amperCharger > 50 && result.amperCharger <= 68) {
+        setSpecifications('16')
+      } else if (result.amperCharger > 68 && result.amperCharger <= 89) {
+        setSpecifications('25')
+      } else if (result.amperCharger > 89 && result.amperCharger <= 171) {
+        setSpecifications('70')
+      } else if (result.amperCharger > 171 && result.amperCharger <= 237) {
+        setSpecifications('70')
+      } else if (result.amperCharger > 237 && result.amperCharger <= 239) {
+        setSpecifications('120')
+      }
+
       setPriceCharger(resultPriceOfCharger)
       setHourCharger(hour)
       setMinutesCharger(minutes)
@@ -151,59 +174,96 @@ export function Calculator() {
     formRef?.current?.reset()
     setClientPowerCharger(false)
     formRef?.current?.setFieldValue('chargerPower', '')
-    setPowerChargerCv(0)
+    setSpecifications('')
   }
 
   return (
     <>
       <Modal open={modalVisible} onOpenChange={() => setModalVisible(false)}>
-        <ModalContent
-          title="Como converter a potência do carro elétrico"
-          size="md"
-        >
-          <Flex padding>
-            <Text>
-              {/* O motor ou os motores elétricos dos carros zero combustão
-              geralmente têm sua potência informada em kW (quilowatt). Cada kW
-              equivale a 1,36 cv (cavalos-vapor), a medida mais comum usada no
-              mercado brasileiro. O recém-lançado Renault Kwid E-Tech, por
-              exemplo, gera 48 kW, o que significaria 65 cv de potência. */}
-            </Text>
+        <ModalContent title="BITOLAS X USOS" size="sm">
+          <Flex padding gap justify="center">
+            <Flex direction="column" align="end" justify="end">
+              <Heading>Bitola</Heading>
+              <Text>1,5 mm²</Text>
+              <Text>2,5 mm²</Text>
+              <Text>4 mm²</Text>
+              <Text>6 mm²</Text>
+              <Text>10 mm²</Text>
+              <Text>16 mm²</Text>
+              <Text>25 mm²</Text>
+              <Text>70 mm²</Text>
+              <Text>70 mm²</Text>
+              <Text>120 mm²</Text>
+            </Flex>
+            <Flex direction="column" align="end" justify="end">
+              <Heading>{''}</Heading>
+              <Text>-</Text>
+              <Text>-</Text>
+              <Text>-</Text>
+              <Text>-</Text>
+              <Text>-</Text>
+              <Text>-</Text>
+              <Text>-</Text>
+              <Text>-</Text>
+              <Text>-</Text>
+              <Text>-</Text>
+            </Flex>
+            <Flex direction="column" align="start">
+              <Heading>Uso Indicado</Heading>
+              <Text>Circuitos com corrente máxima de 15,5 Ampères (A)</Text>
+              <Text>Circuitos com corrente máxima de 21 Ampères (A)</Text>
+              <Text>Circuitos com corrente máxima de 28 Ampères (A)</Text>
+              <Text>Circuitos com corrente máxima de 36 Ampères (A)</Text>
+              <Text>Circuitos com corrente máxima de 50 Ampères (A)</Text>
+              <Text>Circuitos com corrente máxima de 68 Ampères (A)</Text>
+              <Text>Circuitos com corrente máxima de 89 Ampères (A)</Text>
+              <Text>Circuitos com corrente máxima de 171 Ampères (A)</Text>
+              <Text>Circuitos com corrente máxima de 237 Ampères (A)</Text>
+              <Text>Circuitos com corrente máxima de 239 Ampères (A)</Text>
+            </Flex>
           </Flex>
+          <Footer>
+            <Button type="button" onClick={() => setModalVisible(false)}>
+              Ok
+            </Button>
+          </Footer>
         </ModalContent>
       </Modal>
-      <Flex flex overflow direction="column" flexWrap="wrap">
+      <Flex overflow direction="column" flexWrap="wrap">
         <Form flex overflow ref={formRef} onSubmit={handleSubmit}>
           <Flex flex overflow align="center">
-            <Card flex overflow direction="column" flexWrap="wrap" gap>
+            <Card width={360} overflow direction="column" flexWrap="wrap" gap>
               <Flex gap direction="column" padding>
                 <Select
                   name="selectCharger"
                   label="Selecione o carregador *"
                   placeholder="Ex: Wallbox 7kWh"
                   onChange={(value: any) => {
-                    if (value.value === 'client') {
+                    if (value?.value === 'client') {
                       setClientPowerCharger(true)
                     } else {
                       setClientPowerCharger(false)
                       formRef?.current?.setFieldValue('chargerPower', '')
+                      formRef?.current?.setFieldValue('amperCharger', '')
                     }
-                    if (value.value === null) {
+                    if (value?.value === null) {
                       setClientPowerCharger(false)
+                      formRef?.current?.setFieldValue('amperCharger', '')
                       formRef?.current?.setFieldValue('chargerPower', '')
                     }
+                    console.log(value.value)
                   }}
                   options={[
                     {
-                      label: 'Wallbox 7 kWh',
+                      label: 'Wallbox 7 kWh 32A',
                       value: '7kwh',
                     },
                     {
-                      label: 'Wallbox 11 kWh',
+                      label: 'Wallbox 11 kWh 32A',
                       value: '11kwh',
                     },
                     {
-                      label: 'Carregador portatil 32A 7 kWh',
+                      label: 'Carregador portatil 7 kWh 32A',
                       value: 'portable7',
                     },
                     {
@@ -213,9 +273,15 @@ export function Calculator() {
                   ]}
                 />
                 <NumberInput
-                  label="Potência do carregador *"
+                  label="kWh *"
                   name="chargerPower"
                   placeholder="Ex: 7 kWh"
+                  disabled={!clientPowerCharger}
+                />
+                <NumberInput
+                  label="Amperagem *"
+                  name="amperCharger"
+                  placeholder="Ex: 32 A"
                   disabled={!clientPowerCharger}
                 />
                 <MoneyInput
@@ -246,12 +312,11 @@ export function Calculator() {
               </Footer>
             </Card>
             <Flex
-              flex
               flexWrap="wrap"
               direction="column"
               gap={8}
               padding
-              width={420}
+              width={380}
             >
               <Flex justify="between">
                 <Text>Preço médio para carga completa:</Text>
@@ -283,20 +348,20 @@ export function Calculator() {
               </Flex>
               <Separator />
               <Flex align="center" justify="between">
-                <Text>Potência do motor equivalente a:</Text>
+                <Text>Bitola de fio recomendada:</Text>
                 <Flex align="center" gap={8}>
-                  <Text>{powerChargerCv}</Text>
+                  <Text>{specifications}</Text>
                   <LinkButton
                     type="button"
                     onClick={() => setModalVisible(true)}
                   >
-                    Cavalos-vapor
+                    mm²
                   </LinkButton>
                 </Flex>
               </Flex>
               <Flex>
                 <Lottie
-                  height={268}
+                  height={330}
                   width={268}
                   isPaused={false}
                   isStopped={false}

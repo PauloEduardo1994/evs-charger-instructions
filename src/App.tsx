@@ -62,11 +62,9 @@ export function App() {
         </Flex>
 
         <Flex overflow flex align="center" justify="center">
-          <Flex width={780}>
-            <Calculator />
-          </Flex>
+          <Calculator />
         </Flex>
-        <Container width={400} direction="column" padding margin>
+        <Container width={320} direction="column" padding margin>
           <Text>{'Under Development :)'}</Text>
         </Container>
       </Flex>

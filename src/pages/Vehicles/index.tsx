@@ -105,6 +105,7 @@ export function Vehicles() {
               options={selectModels}
               onChange={(value) => {
                 if (value?.value) {
+                  formRef?.current?.setFieldValue('selectVehiclesBrand', [])
                   setNumberId(Number(value?.value) - 1)
                   setShowSelect(true)
                 } else if (!value?.value) {
