@@ -2,6 +2,15 @@ import React, { useState, useRef } from 'react'
 import Lottie from 'react-lottie'
 
 import Confetti from 'canvas-confetti'
+import {
+  Atom,
+  BatteryCharging,
+  BatteryFull,
+  BatteryHigh,
+  BatteryLow,
+  BatteryMedium,
+  Lightning,
+} from 'phosphor-react'
 import * as Yup from 'yup'
 
 import { Button } from '@siakit/button'
@@ -33,6 +42,21 @@ export function Calculator() {
   const [specifications, setSpecifications] = useState('')
   const [clientPowerCharger, setClientPowerCharger] = useState(false)
   const [modalVisible, setModalVisible] = useState(false)
+  const [showLeftData, setShowLeftData] = useState(false)
+
+  const [sevenKwh, setSevenKwh] = useState('00')
+  const [sevenKwhMinutes, setSevenKwhMinutes] = useState('00')
+  const [sevenAndSixKwh, setSevenAndSixKwh] = useState('00')
+  const [sevenAndSixKwhMinutes, setSevenAndSixKwhMinutes] = useState('00')
+  const [elevenKwh, setElevenKwh] = useState('00')
+  const [elevenKwhMinutes, setElevenKwhMinutes] = useState('00')
+  const [twentyTwoKwh, setTwentyTwoKwh] = useState('00')
+  const [twentyTwoKwhMinutes, setTwentyTwoKwhMinutes] = useState('00')
+  const [fortyKwh, setFortyKwh] = useState('00')
+  const [fortyKwhMinutes, setFortyKwhMinutes] = useState('00')
+  const [oneHundredFiftyKwh, setOneHundredFiftyKwh] = useState('00')
+  const [oneHundredFiftyKwhMinutes, setOneHundredFiftyKwhMinutes] =
+    useState('00')
 
   async function handleSubmit(result: any): Promise<any> {
     try {
@@ -127,6 +151,8 @@ export function Calculator() {
         }
       })()
 
+      setShowLeftData(true)
+
       if (result.amperCharger <= 0) {
         setSpecifications('')
       } else if (result.amperCharger <= 15) {
@@ -145,16 +171,75 @@ export function Calculator() {
         setSpecifications('25')
       } else if (result.amperCharger > 89 && result.amperCharger <= 171) {
         setSpecifications('70')
-      } else if (result.amperCharger > 171 && result.amperCharger <= 237) {
-        setSpecifications('70')
-      } else if (result.amperCharger > 237 && result.amperCharger <= 239) {
-        setSpecifications('120')
+      } else if (result.amperCharger > 171) {
+        setSpecifications('Indisponível')
       }
+
+      const hourTen = String(
+        Math.floor(((result.batterySize / 7) * 60) / 60),
+      ).padStart(2, '0')
+      const minutesTen = String(
+        Math.floor(((result.batterySize / 7) * 60) % 60),
+      ).padStart(2, '0')
+
+      const hourSevenAndSix = String(
+        Math.floor(((result.batterySize / 7.6) * 60) / 60),
+      ).padStart(2, '0')
+
+      const minutesSevenAndSix = String(
+        Math.floor(((result.batterySize / 7.6) * 60) % 60),
+      ).padStart(2, '0')
+
+      const elevenKwhHour = String(
+        Math.floor(((result.batterySize / 11) * 60) / 60),
+      ).padStart(2, '0')
+
+      const elevenKwhMinutes = String(
+        Math.floor(((result.batterySize / 11) * 60) % 60),
+      ).padStart(2, '0')
+
+      const twentyTwoHour = String(
+        Math.floor(((result.batterySize / 22) * 60) / 60),
+      ).padStart(2, '0')
+
+      const twentyTwoMinutes = String(
+        Math.floor(((result.batterySize / 22) * 60) % 60),
+      ).padStart(2, '0')
+
+      const fortyHour = String(
+        Math.floor(((result.batterySize / 40) * 60) / 60),
+      ).padStart(2, '0')
+
+      const fortyMinutes = String(
+        Math.floor(((result.batterySize / 40) * 60) % 60),
+      ).padStart(2, '0')
+
+      const oneHundredAndFiftyHour = String(
+        Math.floor(((result.batterySize / 150) * 60) / 60),
+      ).padStart(2, '0')
+
+      const oneHundredAndFiftyMinutes = String(
+        Math.floor(((result.batterySize / 150) * 60) % 60),
+      ).padStart(2, '0')
 
       setPriceCharger(resultPriceOfCharger)
       setHourCharger(hour)
       setMinutesCharger(minutes)
       setPriceForKm(resultPriceForKm)
+
+      setSevenKwh(hourTen)
+      setSevenAndSixKwh(hourSevenAndSix)
+      setElevenKwh(elevenKwhHour)
+      setTwentyTwoKwh(twentyTwoHour)
+      setFortyKwh(fortyHour)
+      setOneHundredFiftyKwh(oneHundredAndFiftyHour)
+
+      setSevenKwhMinutes(minutesTen)
+      setSevenAndSixKwhMinutes(minutesSevenAndSix)
+      setElevenKwhMinutes(elevenKwhMinutes)
+      setTwentyTwoKwhMinutes(twentyTwoMinutes)
+      setFortyKwhMinutes(fortyMinutes)
+      setOneHundredFiftyKwhMinutes(oneHundredAndFiftyMinutes)
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const errors = getValidationErrors(err)
@@ -175,10 +260,11 @@ export function Calculator() {
     setClientPowerCharger(false)
     formRef?.current?.setFieldValue('chargerPower', '')
     setSpecifications('')
+    setShowLeftData(false)
   }
 
   return (
-    <>
+    <Flex flex>
       <Modal open={modalVisible} onOpenChange={() => setModalVisible(false)}>
         <ModalContent title="BITOLAS X USOS" size="sm">
           <Flex padding gap justify="center">
@@ -192,13 +278,9 @@ export function Calculator() {
               <Text>16 mm²</Text>
               <Text>25 mm²</Text>
               <Text>70 mm²</Text>
-              <Text>70 mm²</Text>
-              <Text>120 mm²</Text>
             </Flex>
             <Flex direction="column" align="end" justify="end">
               <Heading>{''}</Heading>
-              <Text>-</Text>
-              <Text>-</Text>
               <Text>-</Text>
               <Text>-</Text>
               <Text>-</Text>
@@ -218,8 +300,6 @@ export function Calculator() {
               <Text>Circuitos com corrente máxima de 68 Ampères (A)</Text>
               <Text>Circuitos com corrente máxima de 89 Ampères (A)</Text>
               <Text>Circuitos com corrente máxima de 171 Ampères (A)</Text>
-              <Text>Circuitos com corrente máxima de 237 Ampères (A)</Text>
-              <Text>Circuitos com corrente máxima de 239 Ampères (A)</Text>
             </Flex>
           </Flex>
           <Footer>
@@ -229,7 +309,14 @@ export function Calculator() {
           </Footer>
         </ModalContent>
       </Modal>
-      <Flex overflow direction="column" flexWrap="wrap">
+      <Flex
+        flex
+        overflow
+        direction="column"
+        flexWrap="wrap"
+        align="center"
+        justify="center"
+      >
         <Form flex overflow ref={formRef} onSubmit={handleSubmit}>
           <Flex flex overflow align="center">
             <Card width={360} overflow direction="column" flexWrap="wrap" gap>
@@ -380,6 +467,127 @@ export function Calculator() {
           </Flex>
         </Form>
       </Flex>
-    </>
+      <Flex width={280} direction="column" padding gap>
+        {showLeftData && (
+          <>
+            <Flex gap>
+              <Lightning size={32} />
+              <Heading>Carregadores</Heading>
+            </Flex>
+            <Flex direction="column" margin="16px 0 0 0">
+              <Flex justify="center">
+                <Text>Tempo aproximado</Text>
+              </Flex>
+              <Flex align="center" justify="between">
+                <Flex gap={8} align="center">
+                  <BatteryLow size={22} />
+                  <Heading size="xxs">7 kWh</Heading>
+                </Flex>
+                <Text>
+                  {sevenKwh}:{sevenKwhMinutes} Horas
+                </Text>
+              </Flex>
+              <Flex align="center" justify="between">
+                <Text>32A Bitola de fio:</Text>
+                <Text>6 mm²</Text>
+              </Flex>
+              <Separator />
+
+              <Flex align="center" justify="between">
+                <Flex gap={8} align="center">
+                  <BatteryMedium size={22} />
+                  <Heading size="xxs">7.6 kWh</Heading>
+                </Flex>
+                <Text>
+                  {sevenAndSixKwh}:{sevenAndSixKwhMinutes} Horas
+                </Text>
+              </Flex>
+              <Flex align="center" justify="between">
+                <Text>32A Bitola de fio:</Text>
+                <Text>6 mm²</Text>
+              </Flex>
+              <Separator />
+
+              <Flex align="center" justify="between">
+                <Flex gap={8} align="center">
+                  <BatteryHigh size={22} />
+                  <Heading size="xxs">11 kWh</Heading>
+                </Flex>
+                <Text>
+                  {elevenKwh}:{elevenKwhMinutes} Horas
+                </Text>
+              </Flex>
+              <Flex align="center" justify="between">
+                <Text>16A 380V Bitola de fio:</Text>
+                <Text>2,5 mm²</Text>
+              </Flex>
+              <Separator />
+
+              <Flex align="center" justify="between">
+                <Flex gap={8} align="center">
+                  <BatteryFull size={22} />
+                  <Heading size="xxs">22 kWh</Heading>
+                </Flex>
+                <Text>
+                  {twentyTwoKwh}:{twentyTwoKwhMinutes} Horas
+                </Text>
+              </Flex>
+              <Flex align="center" justify="between">
+                <Text>32A 380V Bitola de fio:</Text>
+                <Text>6 mm²</Text>
+              </Flex>
+              <Separator />
+
+              <Flex align="center" justify="between">
+                <Flex gap={8} align="center">
+                  <BatteryCharging size={22} />
+                  <Heading size="xxs">40 kWh</Heading>
+                </Flex>
+                <Text>
+                  {fortyKwh}:{fortyKwhMinutes} Horas
+                </Text>
+              </Flex>
+              <Flex align="center" justify="between">
+                <Text>Somente em eletroposto:</Text>
+                <LinkButton
+                  type="button"
+                  onClick={() =>
+                    window.open(
+                      'https://www.tratorprima.com.br/innovaeditor/assets/tabela%20de%20consumo%20de%20energia.pdf',
+                    )
+                  }
+                >
+                  Tabelas
+                </LinkButton>
+              </Flex>
+              <Separator />
+
+              <Flex align="center" justify="between">
+                <Flex gap={8} align="center">
+                  <Atom size={22} />
+                  <Heading size="xxs">150 kWh</Heading>
+                </Flex>
+                <Text>
+                  {oneHundredFiftyKwh}:{oneHundredFiftyKwhMinutes} Horas
+                </Text>
+              </Flex>
+              <Flex align="center" justify="between">
+                <Text>Somente em eletroposto:</Text>
+                <LinkButton
+                  type="button"
+                  onClick={() =>
+                    window.open(
+                      'https://www.tratorprima.com.br/innovaeditor/assets/tabela%20de%20consumo%20de%20energia.pdf',
+                    )
+                  }
+                >
+                  Tabelas
+                </LinkButton>
+              </Flex>
+            </Flex>
+          </>
+        )}
+      </Flex>
+    </Flex>
   )
 }

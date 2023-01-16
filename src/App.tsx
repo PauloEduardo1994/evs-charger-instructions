@@ -3,13 +3,11 @@ import Lottie from 'react-lottie'
 import { useTheme } from '@siakit/core'
 import { Heading } from '@siakit/heading'
 import { Flex } from '@siakit/layout'
-import { Text } from '@siakit/text'
 import { Tooltip } from '@siakit/tooltip'
 
 import Car from './lottie/Comp 1 (1).json'
 import { Calculator } from './pages/Calculator/Calculator'
 import { Vehicles } from './pages/Vehicles'
-import { Container } from './styles'
 
 export function App() {
   const { togggleTheme, changeColor, theme } = useTheme()
@@ -61,12 +59,9 @@ export function App() {
           <Vehicles />
         </Flex>
 
-        <Flex overflow flex align="center" justify="center">
+        <Flex overflow flex>
           <Calculator />
         </Flex>
-        <Container width={280} direction="column" padding margin>
-          <Text>{'Under Development :)'}</Text>
-        </Container>
       </Flex>
     </Flex>
   )

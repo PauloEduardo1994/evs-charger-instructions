@@ -162,7 +162,7 @@ export function Vehicles() {
           <Card
             align="center"
             justify="center"
-            height={80}
+            height={60}
             margin
             direction="column"
           >
