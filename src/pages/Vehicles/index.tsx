@@ -136,6 +136,7 @@ export function Vehicles() {
                 if (value?.value) {
                   formRef?.current?.setFieldValue('selectVehiclesBrand', [])
                   setVehicleData([])
+                  setShowDataCar(false)
                   setNumberId(Number(value?.value) - 1)
                   setShowSelect(true)
                 } else if (!value?.value) {
