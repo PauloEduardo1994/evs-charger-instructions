@@ -60,6 +60,7 @@ export function Vehicles() {
 
   useEffect(() => {
     async function loadVehicles(): Promise<void> {
+      formRef?.current?.setFieldValue('selectVehiclesBrand', [])
       setLoading(true)
 
       const listVehicle = initialData?.brandList?.brand[
