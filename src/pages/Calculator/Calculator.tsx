@@ -338,7 +338,6 @@ export function Calculator() {
                       formRef?.current?.setFieldValue('amperCharger', '')
                       formRef?.current?.setFieldValue('chargerPower', '')
                     }
-                    console.log(value.value)
                   }}
                   options={[
                     {
