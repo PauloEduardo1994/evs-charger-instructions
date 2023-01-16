@@ -2,9 +2,11 @@ import React, { useEffect, useRef, useState } from 'react'
 
 import * as Yup from 'yup'
 
+import { Card } from '@siakit/card'
 import { Form, FormHandles, Select } from '@siakit/form-unform'
 import { Flex } from '@siakit/layout'
 import { useLoading } from '@siakit/loading'
+import { Text } from '@siakit/text'
 
 import { initialData } from '../../Data'
 import getValidationErrors from '../../helpers/getValidationErrors'
@@ -12,8 +14,10 @@ import getValidationErrors from '../../helpers/getValidationErrors'
 export function Vehicles() {
   const formRef = useRef<FormHandles>(null)
   const [numberId, setNumberId] = useState<number | null>(null)
+  const [carId, setCarId] = useState<number | null>(null)
   const [selectModels, setSelectModels] = useState<any>({})
   const [selectVehicles, setSelectVehicles] = useState<any>({})
+  const [vehicleData, setVehicleData] = useState<any>({})
   const [showSelect, setShowSelect] = useState(false)
   const { setLoading } = useLoading()
 
@@ -43,14 +47,14 @@ export function Vehicles() {
     async function loadBrands(): Promise<void> {
       setLoading(true)
 
-      const listBrand = initialData?.brandList?.brand.map((row) => {
+      const response = initialData?.brandList?.brand.map((row) => {
         return {
           label: row.name,
           value: row.id,
         }
       })
 
-      setSelectModels(listBrand)
+      setSelectModels(response)
 
       setLoading(false)
     }
@@ -62,7 +66,7 @@ export function Vehicles() {
     async function loadVehicles(): Promise<void> {
       setLoading(true)
 
-      const listVehicle = initialData?.brandList?.brand[
+      const response = initialData?.brandList?.brand[
         Number(numberId)
       ].vehicles.map((row: any) => {
         return {
@@ -71,7 +75,7 @@ export function Vehicles() {
         }
       })
 
-      setSelectVehicles(listVehicle)
+      setSelectVehicles(response)
 
       setLoading(false)
     }
@@ -79,14 +83,33 @@ export function Vehicles() {
     loadVehicles()
   }, [numberId, setLoading])
 
+  useEffect(() => {
+    async function loadVehiclesData(): Promise<void> {
+      setLoading(true)
+
+      if (carId) {
+        const response = initialData?.brandList?.brand[
+          Number(numberId)
+        ].vehicles.find((id) => id.id === carId)
+
+        setVehicleData(response)
+      }
+
+      setLoading(false)
+    }
+
+    loadVehiclesData()
+  }, [numberId, setLoading, carId])
+
   function handleResetReseult() {
     setSelectVehicles([])
     formRef?.current?.setFieldValue('selectVehiclesBrand', [])
     setShowSelect(false)
+    setVehicleData([])
   }
 
   return (
-    <Flex>
+    <Flex direction="column">
       <Form flex overflow ref={formRef} onSubmit={handleSubmit}>
         <Flex flex overflow align="center">
           <Flex
@@ -106,12 +129,12 @@ export function Vehicles() {
               onChange={(value) => {
                 if (value?.value) {
                   formRef?.current?.setFieldValue('selectVehiclesBrand', [])
+                  setVehicleData([])
                   setNumberId(Number(value?.value) - 1)
                   setShowSelect(true)
                 } else if (!value?.value) {
                   handleResetReseult()
                 }
-                console.log(numberId)
               }}
             />
             <Select
@@ -120,10 +143,23 @@ export function Vehicles() {
               placeholder="Selecione um carro"
               options={selectVehicles}
               disabled={!showSelect}
+              onChange={(value) => {
+                setCarId(Number(value?.value))
+              }}
             />
           </Flex>
         </Flex>
       </Form>
+      <Card
+        align="center"
+        justify="center"
+        height={80}
+        margin
+        direction="column"
+      >
+        <Text>Image Here</Text>
+      </Card>
+      <Flex>{vehicleData.id}</Flex>
     </Flex>
   )
 }
