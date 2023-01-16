@@ -467,7 +467,7 @@ export function Calculator() {
           </Flex>
         </Form>
       </Flex>
-      <Flex width={280} direction="column" padding gap>
+      <Flex width={280} direction="column" padding="16px 16px 16px 0" gap>
         {showLeftData && (
           <>
             <Flex gap>
